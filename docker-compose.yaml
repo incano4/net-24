@@ -11,33 +11,21 @@ services:
     volumes:
       - ./conf:/etc/nginx/conf.d
       - ./html:/usr/share/nginx/html
-      # - ./data/certbot/conf:/etc/letsencrypt
-      # - ./data/certbot/www:/var/www/certbot
     depends_on:
       - flask
 
   flask:
     build: .
     networks:
-      - internal_net
+      internal_net:
+        aliases:
+          - flask
     volumes:
       - ./app:/app
     deploy: 
       replicas: 2
-    # ports:
-    #   - "5000-5001:5000"
     restart: on-failure
     command: python app.py
-
-  # certbot:
-  #   container_name: certbot
-  #   image: certbot/certbot
-  #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt
-  #     - ./data/certbot/www:/var/www/certbot
-  #   networks: 
-  #     - internal_net
-
 
 networks:
   external_net:
@@ -45,14 +33,3 @@ networks:
   internal_net:
     name: internal_net
     driver: bridge
-
-  # flask:
-  #   build: .
-  #   volumes:
-  #     - ./app:/app
-  #   # ports:
-  #   #   - "5000-5001:5000"  -- на самом деле интересный момент получается..
-  #   deploy: 
-  #     replicas: 2
-  #   restart: on-failure
-  #   command: python app.py
