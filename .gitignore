@@ -1,1 +1,3 @@
-'compose copy'
+./'compose copy'
+./.env_certs
+./prep.sh

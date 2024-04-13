@@ -1,39 +1,49 @@
 name: infrastructure
 services:
-  nginx:
-    image: "nginx:1.25.4"
-    container_name: nginx
-    ports:
-      - "80:80"
-    networks:
-      - external_net
-      - internal_net
-    volumes:
-      - ./conf:/etc/nginx/conf.d
-      - ./html:/usr/share/nginx/html
-    depends_on:
-      - flask
-
-  flask:
-    build: ./python/
-    networks:
-      internal_net:
-        aliases:
-          - flask
-    volumes:
-      - ./app:/app
-    deploy: 
-      replicas: 2
-    restart: on-failure
-    command: python app.py
-
-
-
-  # ca:
-  #   build: ./certificate
+  # nginx:
+  #   image: "nginx:1.25.4"
+  #   container_name: nginx
+  #   ports:
+  #     - "80:80"
   #   networks:
-  #     - default
+  #     - external_net
+  #     - internal_net
+  #   volumes:
+  #     - ./conf:/etc/nginx/conf.d
+  #     - ./html:/usr/share/nginx/html
+  #   depends_on:
+  #     - flask
+
+  # flask:
+  #   build: ./python/
+  #   networks:
+  #     internal_net:
+  #       aliases:
+  #         - flask
+  #   volumes:
+  #     - ./app:/app
+  #   deploy: 
+  #     replicas: 2
+  #   restart: on-failure
+  #   command: python app.py
+
+
+
+  ca:
+    build: ./certificate/
+    container_name: ca-cert
+    env_file: .env_certs
+    volumes:
+      # - ./pki_conf:/pki
+      - ./pki:/pki
+    # networks:
+    #   - default
+    # command: sleep infinity
+      # - openssl genrsa -out ca.key 4096
     
+
+# volumes:
+#   pki:
 
 networks:
   external_net:
