@@ -15,7 +15,7 @@ services:
       - flask
 
   flask:
-    build: .
+    build: ./python/
     networks:
       internal_net:
         aliases:
@@ -27,9 +27,51 @@ services:
     restart: on-failure
     command: python app.py
 
+
+
+  # ca:
+  #   build: ./certificate
+  #   networks:
+  #     - default
+    
+
 networks:
   external_net:
     driver: bridge
   internal_net:
     name: internal_net
     driver: bridge
+
+
+
+
+
+
+
+
+
+
+# configs:
+#   ca-cart:
+#     content: | 
+#       ca_req.conf
+#       [ req ]
+#       default_bits = 4096
+#       encrypt_key = no
+#       default_md = sha256
+#       prompt = no
+#       utf8 = yes
+#       distinguished_name = ca_distinguished_name
+#       req_extensions = ca_extensions
+
+#       [ ca_distinguished_name ]
+#       C = RU
+#       ST = Moscow State
+#       L = Moscow
+#       O = Bauman Moscow State Technical University
+#       CN = Dychakovskaya Anastasia
+
+#       [ ca_extensions ]
+#       basicConstraints = critical,CA:TRUE
+#       keyUsage = critical,keyCertSign,cRLSign
+#       subjectKeyIdentifier = hash
