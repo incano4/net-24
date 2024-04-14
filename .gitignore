@@ -1,3 +1,11 @@
+webserver.crt
+webserver.key
+ca.key
+ca.crt
+pki/db
+pki/certs
+/'to do'
 ./'compose copy'
 ./.env_certs
 ./prep.sh
+to do

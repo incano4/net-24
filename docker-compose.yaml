@@ -1,45 +1,57 @@
 name: infrastructure
 services:
-  # nginx:
-  #   image: "nginx:1.25.4"
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #   networks:
-  #     - external_net
-  #     - internal_net
-  #   volumes:
-  #     - ./conf:/etc/nginx/conf.d
-  #     - ./html:/usr/share/nginx/html
-  #   depends_on:
-  #     - flask
+  nginx:
+    image: "nginx:1.25.4"
+    container_name: nginx
+    ports:
+      - "80:80"
+    networks:
+      - external_net
+      - internal_net
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d        #конф. файл nginx
+      - ./nginx/html:/usr/share/nginx/html    #веб-странички
+      - ./nginx/https:/etc/nginx/https             #сертификаты и прочее для https
+      # - ./nginx/https/ssl/ssl_params:/etc/nginx/             #сертификаты и прочее для https
+      # - ./pki:/etc/nginx
+    # command: openssl dhparam -out /etc/nginx/https/ssl/dhparam.pem 2048
+    # command: sleep infinity
+    depends_on:
+      - flask
 
-  # flask:
-  #   build: ./python/
-  #   networks:
-  #     internal_net:
-  #       aliases:
-  #         - flask
-  #   volumes:
-  #     - ./app:/app
-  #   deploy: 
-  #     replicas: 2
-  #   restart: on-failure
-  #   command: python app.py
+  flask:
+    build: ./python/
+    networks:
+      internal_net:
+        aliases:
+          - flask
+    volumes:
+      - ./app:/app
+    deploy: 
+      replicas: 2
+    restart: on-failure
+    command: python app.py
 
 
 
   ca:
     build: ./certificate/
     container_name: ca-cert
-    env_file: .env_certs
+    # env_file: .env_certs
     volumes:
       # - ./pki_conf:/pki
-      - ./pki:/pki
-    # networks:
-    #   - default
-    # command: sleep infinity
-      # - openssl genrsa -out ca.key 4096
+      - ./nginx/https/ssl:/pki/web
+      - ./pki:/pki:Z
+      # - ./nginx/https/ssl:/pki/web
+  #   # networks:
+  #   #   - default
+    command: sleep infinity
+  #   # command: |
+  #   #   if [ -d "./pki/db" ]; then
+  #   #   rm -rf "./pki/db";
+  #   #   else
+  #   #   echo "Папка '/src' не существует.";
+  #   #   fi
     
 
 # volumes:
