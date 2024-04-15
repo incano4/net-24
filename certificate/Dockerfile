@@ -1,18 +1,13 @@
 FROM alpine:3.19.1
+# FROM alpine:latest
 
 RUN apk add --upgrade apk-tools && \
     apk upgrade --available && \
-    apk add openssl
+    apk add --no-cache openssl
 
 WORKDIR /pki
-CMD openssl genrsa -out ca.key 4096 
-# && \
-    # openssl req -new -key ca.key -out ca.csr -config ./conf/ca_req.conf && \
-    # mkdir certs db && \
-    # touch db/index && \
-    # openssl rand -hex 16 > serial && \
-    # openssl ca -selfsign -in ca.csr -out ca.crt -config ./conf/ca.conf -batch
-    #
+ENTRYPOINT ["sh"]
+
     #           -batch     Don't ask questions
     # ARG usr
 # ENV usr=$usr
