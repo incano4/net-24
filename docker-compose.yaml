@@ -17,27 +17,32 @@ services:
       # - ./pki:/etc/nginx
     # command: openssl dhparam -out /etc/nginx/https/ssl/dhparam.pem 2048
     # command: sleep infinity
-    # depends_on:
-    #   - flask
+    depends_on:
+      certs_openssl:
+        condition: service_completed_successfully
+      dhparam_gen:
+        condition: service_completed_successfully
+      flask:
+        condition: service_started
+      
 
-  # flask:
-  #   build: ./python/
-  #   networks:
-  #     internal_net:
-  #       aliases:
-  #         - flask
-  #   volumes:
-  #     - ./app:/app
-  #   deploy: 
-  #     replicas: 2
-  #   restart: on-failure
-  #   command: python app.py
+  flask:
+    build: ./python/
+    networks:
+      internal_net:
+        aliases:
+          - flask
+    volumes:
+      - ./app:/app
+    deploy: 
+      replicas: 2
+    restart: on-failure
+    command: python app.py
 
 
-
-  ca:
+  certs_openssl:
     build: ./certificate/
-    container_name: ca-cert
+    container_name: certs_openssl
     volumes:
       # - ./pki_conf:/pki
       - ./nginx/https/ssl:/pki/web
@@ -45,34 +50,25 @@ services:
       # - ./nginx/https/ssl:/pki/web
     env_file:
       - .env
-    environment:
-      - private_key_size=${private_key_size}
-
   #   # networks:
   #   #   - default
     # command: sleep infinity
     # command: -c 'echo "hello there"'
     command: >
-      -c 'openssl genrsa -out ca.key ${private_key_size} &&
+      -c 'openssl genrsa -out ca.key ${PRIVATE_KEY_SIZE} &&
       openssl req -new -key ca.key -out ca.csr -config ./conf/ca_req.conf &&
       mkdir certs db && touch db/index && openssl rand -hex 16 > serial &&
       openssl ca -selfsign -in ca.csr -out ca.crt -config ./conf/ca.conf -batch &&
       openssl req -new -keyout ./web/webserver.key -out webserver.csr -nodes -config ./conf/webserver_req.conf &&
       openssl ca -in webserver.csr -out ./web/webserver.crt -config ./conf/ca.conf -batch'
 
-    # command: >
-    #   -c 'openssl genrsa -out ca.key $private_key_size && \
-    #   openssl req -new -key ca.key -out ca.csr -config ./conf/ca_req.conf && \
-    #   mkdir certs db && touch db/index && openssl rand -hex 16 > serial && \
-    #   openssl ca -selfsign -in ca.csr -out ca.crt -config ./conf/ca.conf -batch
-      
-    #   cp ca.crt /openssl-certs &&
-      
-    #   openssl req -new -keyout ./web/webserver.key -out webserver.csr -nodes -config ./conf/webserver_req.conf && \
-    #   openssl ca -in webserver.csr -out ./web/webserver.crt -config ./conf/ca.conf -batch && \
-    #   openssl ca -in webserver.csr -out webserver.crt -config ca.conf && \
+  dhparam_gen:
+    build: ./certificate/
+    container_name: dhparam_gen
+    volumes:
+      - ./nginx/https:/etc/nginx/https
+    command: -c 'openssl dhparam -out /etc/nginx/https/ssl/dhparam.pem ${DHPARAM_SIZE}'
 
-    #   cp webserver.crt /openssl-certs && cp webserver.key /openssl-certs'
       
       
       
@@ -86,37 +82,3 @@ networks:
   internal_net:
     name: internal_net
     driver: bridge
-
-
-
-
-
-
-
-
-
-
-# configs:
-#   ca-cart:
-#     content: | 
-#       ca_req.conf
-#       [ req ]
-#       default_bits = 4096
-#       encrypt_key = no
-#       default_md = sha256
-#       prompt = no
-#       utf8 = yes
-#       distinguished_name = ca_distinguished_name
-#       req_extensions = ca_extensions
-
-#       [ ca_distinguished_name ]
-#       C = RU
-#       ST = Moscow State
-#       L = Moscow
-#       O = Bauman Moscow State Technical University
-#       CN = Dychakovskaya Anastasia
-
-#       [ ca_extensions ]
-#       basicConstraints = critical,CA:TRUE
-#       keyUsage = critical,keyCertSign,cRLSign
-#       subjectKeyIdentifier = hash
