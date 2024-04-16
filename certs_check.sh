@@ -37,16 +37,20 @@ elif [ ${diff[0]} -lt 0 ] && [ ${diff[1]} -eq 1 ] && [ ${diff[2]} -eq 0 ] ;
     then
         echo начало-конец месяца
         rm -rf ./pki/ca.crt
-        docker compose -f ./net-24/docker-compose.yaml up certs_openssl # УКАЖИ НОРМ ПУТЬ
+        docker compose -f ./docker-compose.yaml up certs_openssl # УКАЖИ НОРМ ПУТЬ
 
 elif [ ${diff[0]} -lt 0 ] && [ ${diff[1]} -lt 0 ] && [ ${diff[2]} -eq 1 ] ;
     then
         echo начало-конец ГОДА
         rm -rf ./pki/ca.crt
-        docker compose -f ./net-24/docker-compose.yaml up certs_openssl # УКАЖИ НОРМ ПУТЬ
+        docker compose -f ./docker-compose.yaml up certs_openssl # УКАЖИ НОРМ ПУТЬ
 
 else
     echo Certifiate is not expired!
+            rm -rf ./pki/ca.crt
+            sudo rm -rf /usr/local/share/ca-certificates/ca.crt
+        docker compose -f ./docker-compose.yaml up certs_openssl # УКАЖИ НОРМ ПУТЬ
+        ./installing_certs.sh
 fi
 echo ${diff[*]}
 
