@@ -8,6 +8,7 @@
 ;     openssl verify /usr/local/share/ca-certificates/ca.crt
 
 
+        посмотреть установку сертов на дебиане
 
 7. проверка срока сертификата УЦ и веб-сервера:
     openssl x509 -enddate -noout -in /home/$USER/net-24/pki/ca.crt 
