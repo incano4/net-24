@@ -4,8 +4,8 @@ ca.key
 ca.crt
 pki/db
 pki/certs
-/'to do'
-./'compose copy'
-./.env_certs
-./prep.sh
-to do
+nginx/https/ssl/dhparam.pem
+pki/ca.csr
+pki/serial
+pki/serial.old
+pki/webserver.csr

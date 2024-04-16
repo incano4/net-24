@@ -55,19 +55,18 @@ services:
     # command: sleep infinity
     # command: -c 'echo "hello there"'
     command: >
-      -c 'openssl genrsa -out ca.key ${PRIVATE_KEY_SIZE} &&
-      openssl req -new -key ca.key -out ca.csr -config ./conf/ca_req.conf &&
-      mkdir certs db && touch db/index && openssl rand -hex 16 > serial &&
-      openssl ca -selfsign -in ca.csr -out ca.crt -config ./conf/ca.conf -batch &&
-      openssl req -new -keyout ./web/webserver.key -out webserver.csr -nodes -config ./conf/webserver_req.conf &&
-      openssl ca -in webserver.csr -out ./web/webserver.crt -config ./conf/ca.conf -batch'
+      -c './certs_gen.sh'
 
   dhparam_gen:
     build: ./certificate/
     container_name: dhparam_gen
     volumes:
       - ./nginx/https:/etc/nginx/https
-    command: -c 'openssl dhparam -out /etc/nginx/https/ssl/dhparam.pem ${DHPARAM_SIZE}'
+      - ./pki:/pki:Z
+    env_file:
+      - .env
+    command: -c './dhparam_gen.sh'
+    # command: sleep infinity
 
       
       
