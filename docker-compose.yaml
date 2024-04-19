@@ -15,8 +15,7 @@ services:
       - ./nginx/https:/etc/nginx/https             #сертификаты и прочее для https
       # - ./nginx/https/ssl/ssl_params:/etc/nginx/             #сертификаты и прочее для https
       # - ./pki:/etc/nginx
-    # command: openssl dhparam -out /etc/nginx/https/ssl/dhparam.pem 2048
-    # command: sleep infinity
+    restart: on-failure
     depends_on:
       certs_openssl:
         condition: service_completed_successfully
@@ -43,6 +42,8 @@ services:
   certs_openssl:
     build: ./certificate/
     container_name: certs_openssl
+    networks:
+      - external_net
     volumes:
       # - ./pki_conf:/pki
       - ./nginx/https/ssl:/pki/web
@@ -50,23 +51,20 @@ services:
       # - ./nginx/https/ssl:/pki/web
     env_file:
       - .env
-  #   # networks:
-  #   #   - default
-    # command: sleep infinity
-    # command: -c 'echo "hello there"'
     command: >
       -c './certs_gen.sh'
 
   dhparam_gen:
     build: ./certificate/
     container_name: dhparam_gen
+    networks:
+      - external_net
     volumes:
       - ./nginx/https:/etc/nginx/https
       - ./pki:/pki:Z
     env_file:
       - .env
     command: -c './dhparam_gen.sh'
-    # command: sleep infinity
 
       
       

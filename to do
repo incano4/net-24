@@ -1,5 +1,5 @@
-2. подумать, как решить проблему с проверкой валидности
-    2.1. в том числе, как почистить за собой папки db и certs
+; 2. подумать, как решить проблему с проверкой валидности
+;     2.1. в том числе, как почистить за собой папки db и certs
 
 ; Установка сертификатов: 
 ;     sudo cp pki/ca.crt /usr/local/share/ca-certificates/ca.crt
@@ -10,19 +10,12 @@
 
         посмотреть установку сертов на дебиане
 
-7. проверка срока сертификата УЦ и веб-сервера:
-    openssl x509 -enddate -noout -in /home/$USER/net-24/pki/ca.crt 
-    openssl x509 -enddate -noout -in /home/$USER/net-24/nginx/https/ssl/webserver.crt 
-
-if date = выводу, то перевыпустить.
-
-перевыпуск: 
-    - sudo rm -rf /home/$USER/net-24/pki/certs
-    - sudo rm -rf /home/$USER/net-24/pki/db
-    - docker compose up certs_openssl
+; 7. проверка срока сертификата УЦ и веб-сервера:
+;     openssl x509 -enddate -noout -in /home/$USER/net-24/pki/ca.crt 
+;     openssl x509 -enddate -noout -in /home/$USER/net-24/nginx/https/ssl/webserver.crt 
 
 в случае падения nginx: 
     - проверить срок действия серта
     - если ок - перезапуститься без 
 
-если срок действия сертификата - ок, то certs_openssl завершает работу с кодом 0
+; если срок действия сертификата - ок, то certs_openssl завершает работу с кодом 0
