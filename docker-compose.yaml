@@ -13,8 +13,6 @@ services:
       - ./nginx/conf:/etc/nginx/conf.d        #конф. файл nginx
       - ./nginx/html:/usr/share/nginx/html    #веб-странички
       - ./nginx/https:/etc/nginx/https             #сертификаты и прочее для https
-      # - ./nginx/https/ssl/ssl_params:/etc/nginx/             #сертификаты и прочее для https
-      # - ./pki:/etc/nginx
     restart: on-failure
     depends_on:
       certs_openssl:
@@ -45,10 +43,8 @@ services:
     networks:
       - external_net
     volumes:
-      # - ./pki_conf:/pki
       - ./nginx/https/ssl:/pki/web
       - ./pki:/pki:Z
-      # - ./nginx/https/ssl:/pki/web
     env_file:
       - .env
     command: >
@@ -66,12 +62,7 @@ services:
       - .env
     command: -c './dhparam_gen.sh'
 
-      
-      
-      
 
-# volumes:
-#   pki:
 
 networks:
   external_net:
